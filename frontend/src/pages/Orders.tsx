@@ -37,14 +37,16 @@ const Orders = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-6 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50/30 to-white p-4 md:p-6 flex flex-col">
       <div className="max-w-4xl mx-auto flex-1">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-lg shadow-md p-6"
+          className="bg-white rounded-3xl shadow-2xl p-8 border-2 border-emerald-100"
         >
-          <h2 className="text-2xl font-bold mb-6 text-gray-800">My Orders</h2>
+          <h2 className="text-4xl font-extrabold mb-8 bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+            📦 My Orders
+          </h2>
 
           {orders.length === 0 ? (
             <EmptyState

@@ -22,13 +22,13 @@ const EmptyState = ({
       animate={{ opacity: 1, y: 0 }}
       className="text-center py-12 px-4"
     >
-      <div className="text-6xl mb-4">{icon}</div>
-      <h3 className="text-2xl font-bold text-gray-800 mb-2">{title}</h3>
-      <p className="text-gray-600 mb-6 max-w-md mx-auto">{message}</p>
+      <div className="text-7xl mb-6">{icon}</div>
+      <h3 className="text-3xl font-extrabold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mb-3">{title}</h3>
+      <p className="text-emerald-700 mb-8 max-w-md mx-auto text-lg font-medium">{message}</p>
       {buttonText && buttonLink && (
         <Link
           to={buttonLink}
-          className="inline-block bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition font-medium"
+          className="inline-block bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-8 py-4 rounded-2xl transition-all font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105"
         >
           {buttonText}
         </Link>

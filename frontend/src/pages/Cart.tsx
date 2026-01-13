@@ -32,15 +32,17 @@ const Cart = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-6">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50/30 to-white p-4 md:p-6">
       <div className="max-w-4xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="bg-white rounded-lg shadow-md p-6"
+          className="bg-white rounded-3xl shadow-2xl p-8 border-2 border-emerald-100"
         >
-          <h2 className="text-2xl font-bold mb-6 text-gray-800">Your Cart</h2>
+          <h2 className="text-4xl font-extrabold mb-8 bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+            🛒 Your Cart
+          </h2>
 
           <AnimatePresence mode="wait">
             {cart.length === 0 ? (
@@ -134,7 +136,7 @@ const Cart = () => {
                     >
                       <Link
                         to="/dashboard"
-                        className="block text-center bg-gray-200 text-black px-6 py-3 rounded-lg hover:bg-gray-300 transition"
+                        className="block text-center bg-emerald-100 text-emerald-700 px-8 py-4 rounded-2xl hover:bg-emerald-200 transition-all font-semibold shadow-lg hover:shadow-xl transform hover:scale-105"
                       >
                         Continue Shopping
                       </Link>
@@ -156,7 +158,7 @@ const Cart = () => {
                     >
                       <Link
                         to="/checkout"
-                        className="block text-center bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition"
+                        className="block text-center bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-8 py-4 rounded-2xl transition-all font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105"
                       >
                         Proceed to Checkout
                       </Link>

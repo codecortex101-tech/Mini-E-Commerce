@@ -77,9 +77,9 @@ const Wishlist = () => {
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => handleMoveToCart(item)}
-                      className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800 transition"
+                      className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-6 py-3 rounded-xl transition-all font-semibold shadow-lg hover:shadow-xl"
                     >
-                      Add to Cart
+                      🛒 Add to Cart
                     </motion.button>
                     <motion.button
                       whileHover={{ scale: 1.05 }}
