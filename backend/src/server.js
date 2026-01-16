@@ -2,7 +2,7 @@ const dotenv = require("dotenv");
 const app = require("./app");
 const connectDB = require("./config/db");
 
-/* ---------- Load Env ---------- */
+/* ---------- Load Environment Variables ---------- */
 dotenv.config();
 
 /* ---------- Connect Database ---------- */
