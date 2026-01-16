@@ -1,3 +1,6 @@
+main page
+please read carefully 
+
 # Mini-E-Commerce
 Perfect. As **Project Manager**, you already did the **right first step** by creating the **company-owned repository**.
 Below is a **FULLY PROFESSIONAL, SOFTWARE-HOUSE–LEVEL `README.md`** for your repo:
