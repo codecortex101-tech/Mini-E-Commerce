@@ -30,12 +30,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(helmet());
 
 /* =========================================================
-   CORS (LOCAL + VERCEL + PRODUCTION SAFE)
+   CORS (LOCAL + VERCEL + NODE 22 SAFE)
 ========================================================= */
 app.use(
   cors({
     origin: [
-      // Localhost
+      // Local
       "http://localhost:5173",
       "http://localhost:5174",
       "http://127.0.0.1:5173",
@@ -45,12 +45,9 @@ app.use(
       "https://mini-e-commerce-olo8d40a8-azhars-projects-61cd967e.vercel.app",
     ],
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
   })
 );
-
-/* ---------- Preflight (VERY IMPORTANT) ---------- */
-app.options("*", cors());
 
 /* =========================================================
    Routes
