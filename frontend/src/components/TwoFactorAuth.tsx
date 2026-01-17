@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { useToast } from "../context/ToastContext";
 
@@ -8,48 +8,12 @@ type TwoFactorAuthProps = {
 };
 
 const TwoFactorAuth = ({ onVerify, onCancel }: TwoFactorAuthProps) => {
-  const [code, setCode] = useState(["", "", "", "", "", ""]);
-  const inputRefs = [useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null)];
+  const [code, setCode] = useState<string[]>(["", "", "", "", "", ""]);
+  const inputRefs = Array.from({ length: 6 }, () =>
+    useRef<HTMLInputElement>(null)
+  );
+
   const { showToast } = useToast();
-
-  const handleChange = (index: number, value: string) => {
-    if (value.length > 1) return; // Only allow single digit
-    
-    const newCode = [...code];
-    newCode[index] = value.replace(/\D/g, ""); // Only numbers
-    setCode(newCode);
-
-    // Auto-focus next input
-    if (value && index < 5) {
-      inputRefs[index + 1].current?.focus();
-    }
-
-    // Auto-submit when all digits are filled
-    if (newCode.every((digit) => digit !== "") && index === 5) {
-      handleVerify(newCode.join(""));
-    }
-  };
-
-  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Backspace" && !code[index] && index > 0) {
-      inputRefs[index - 1].current?.focus();
-    }
-  };
-
-  const handlePaste = (e: React.ClipboardEvent) => {
-    e.preventDefault();
-    const pastedData = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
-    const newCode = [...code];
-    for (let i = 0; i < 6; i++) {
-      newCode[i] = pastedData[i] || "";
-    }
-    setCode(newCode);
-    if (pastedData.length === 6) {
-      handleVerify(pastedData);
-    } else {
-      inputRefs[pastedData.length]?.current?.focus();
-    }
-  };
 
   const handleVerify = (codeToVerify: string) => {
     if (codeToVerify.length !== 6) {
@@ -57,6 +21,51 @@ const TwoFactorAuth = ({ onVerify, onCancel }: TwoFactorAuthProps) => {
       return;
     }
     onVerify(codeToVerify);
+  };
+
+  const handleChange = (index: number, value: string) => {
+    if (value.length > 1) return;
+
+    const newCode = [...code];
+    newCode[index] = value.replace(/\D/g, "");
+    setCode(newCode);
+
+    if (value && index < 5) {
+      inputRefs[index + 1].current?.focus();
+    }
+
+    if (newCode.every((d) => d !== "") && index === 5) {
+      handleVerify(newCode.join(""));
+    }
+  };
+
+  const handleKeyDown = (
+    index: number,
+    e: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (e.key === "Backspace" && !code[index] && index > 0) {
+      inputRefs[index - 1].current?.focus();
+    }
+  };
+
+  const handlePaste = (e: React.ClipboardEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const pasted = e.clipboardData
+      .getData("text")
+      .replace(/\D/g, "")
+      .slice(0, 6);
+
+    const newCode = [...code];
+    for (let i = 0; i < 6; i++) {
+      newCode[i] = pasted[i] || "";
+    }
+    setCode(newCode);
+
+    if (pasted.length === 6) {
+      handleVerify(pasted);
+    } else {
+      inputRefs[pasted.length]?.current?.focus();
+    }
   };
 
   const handleResend = () => {
@@ -77,8 +86,11 @@ const TwoFactorAuth = ({ onVerify, onCancel }: TwoFactorAuthProps) => {
         </p>
       </div>
 
-      <div className="flex justify-center gap-2 mb-6" onPaste={handlePaste}>
-        {code.map((digit, index) => (
+      <div
+        className="flex justify-center gap-2 mb-6"
+        onPaste={handlePaste}
+      >
+        {code.map((digit: string, index: number) => (
           <input
             key={index}
             ref={inputRefs[index]}
@@ -88,7 +100,7 @@ const TwoFactorAuth = ({ onVerify, onCancel }: TwoFactorAuthProps) => {
             value={digit}
             onChange={(e) => handleChange(index, e.target.value)}
             onKeyDown={(e) => handleKeyDown(index, e)}
-            className="w-12 h-14 text-center text-2xl font-bold border-2 border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition"
+            className="w-12 h-14 text-center text-2xl font-bold border-2 border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-400 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
           />
         ))}
       </div>
@@ -98,7 +110,7 @@ const TwoFactorAuth = ({ onVerify, onCancel }: TwoFactorAuthProps) => {
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={() => handleVerify(code.join(""))}
-          className="w-full px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-semibold transition shadow-lg hover:shadow-xl"
+          className="w-full px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-semibold"
         >
           Verify Code
         </motion.button>
@@ -107,7 +119,7 @@ const TwoFactorAuth = ({ onVerify, onCancel }: TwoFactorAuthProps) => {
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={handleResend}
-          className="w-full px-6 py-3 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg font-semibold transition"
+          className="w-full px-6 py-3 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg font-semibold"
         >
           Resend Code
         </motion.button>
@@ -117,7 +129,7 @@ const TwoFactorAuth = ({ onVerify, onCancel }: TwoFactorAuthProps) => {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={onCancel}
-            className="w-full px-6 py-3 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg font-semibold transition"
+            className="w-full px-6 py-3 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg font-semibold"
           >
             Cancel
           </motion.button>

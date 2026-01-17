@@ -5,8 +5,17 @@ type PasswordStrengthMeterProps = {
   password: string;
 };
 
+type StrengthColor = "red" | "yellow" | "blue" | "green";
+type StrengthLevel = "weak" | "fair" | "good" | "strong";
+
+type StrengthResult = {
+  level: StrengthLevel;
+  color: StrengthColor;
+  percentage: number;
+};
+
 const PasswordStrengthMeter = ({ password }: PasswordStrengthMeterProps) => {
-  const strength = useMemo(() => {
+  const strength = useMemo<StrengthResult>(() => {
     let score = 0;
 
     if (password.length >= 8) score++;
@@ -23,14 +32,14 @@ const PasswordStrengthMeter = ({ password }: PasswordStrengthMeterProps) => {
 
   if (!password) return null;
 
-  const colorClasses = {
+  const colorClasses: Record<StrengthColor, string> = {
     red: "bg-red-500",
     yellow: "bg-yellow-500",
     blue: "bg-blue-500",
     green: "bg-green-500",
   };
 
-  const textClasses = {
+  const textClasses: Record<StrengthColor, string> = {
     red: "text-red-600 dark:text-red-400",
     yellow: "text-yellow-600 dark:text-yellow-400",
     blue: "text-blue-600 dark:text-blue-400",
@@ -47,6 +56,7 @@ const PasswordStrengthMeter = ({ password }: PasswordStrengthMeterProps) => {
           {strength.percentage}%
         </span>
       </div>
+
       <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
         <motion.div
           initial={{ width: 0 }}
@@ -55,18 +65,31 @@ const PasswordStrengthMeter = ({ password }: PasswordStrengthMeterProps) => {
           className={`h-full ${colorClasses[strength.color]} transition-all`}
         />
       </div>
+
       <ul className="mt-2 text-xs text-gray-600 dark:text-gray-400 space-y-1">
         <li className={password.length >= 8 ? "text-green-600" : ""}>
           {password.length >= 8 ? "✓" : "○"} At least 8 characters
         </li>
-        <li className={/[a-z]/.test(password) && /[A-Z]/.test(password) ? "text-green-600" : ""}>
-          {/[a-z]/.test(password) && /[A-Z]/.test(password) ? "✓" : "○"} Uppercase and lowercase
+        <li
+          className={
+            /[a-z]/.test(password) && /[A-Z]/.test(password)
+              ? "text-green-600"
+              : ""
+          }
+        >
+          {/[a-z]/.test(password) && /[A-Z]/.test(password) ? "✓" : "○"} Uppercase
+          and lowercase
         </li>
         <li className={/\d/.test(password) ? "text-green-600" : ""}>
           {/\d/.test(password) ? "✓" : "○"} At least one number
         </li>
-        <li className={/[^a-zA-Z0-9]/.test(password) ? "text-green-600" : ""}>
-          {/[^a-zA-Z0-9]/.test(password) ? "✓" : "○"} At least one special character
+        <li
+          className={
+            /[^a-zA-Z0-9]/.test(password) ? "text-green-600" : ""
+          }
+        >
+          {/[^a-zA-Z0-9]/.test(password) ? "✓" : "○"} At least one special
+          character
         </li>
       </ul>
     </div>
