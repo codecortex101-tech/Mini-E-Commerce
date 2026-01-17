@@ -23,7 +23,7 @@ app.use(express.urlencoded({ extended: true }));
 /* ---------- Security ---------- */
 app.use(helmet());
 
-/* ---------- CORS (FINAL FIX) ---------- */
+/* ---------- CORS (PRODUCTION SAFE) ---------- */
 app.use(
   cors({
     origin: [
@@ -34,10 +34,10 @@ app.use(
 
       // ✅ Vercel frontend domains
       "https://mini-e-commerce-livid.vercel.app",
-      "https://mini-e-commerce-aitx873d0-azhars-projects-61cd967e.vercel.app"
+      "https://mini-e-commerce-aitx873d0-azhars-projects-61cd967e.vercel.app",
     ],
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   })
 );
 
@@ -56,7 +56,7 @@ app.use("/api/users", userRoutes);
 app.get("/", (req, res) => {
   res.status(200).json({
     success: true,
-    message: "Mini E-Commerce Backend is running"
+    message: "Mini E-Commerce Backend is running",
   });
 });
 
@@ -64,7 +64,7 @@ app.get("/", (req, res) => {
 app.get("/health", (req, res) => {
   res.status(200).json({
     success: true,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 });
 
