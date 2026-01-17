@@ -9,55 +9,53 @@ export type User = {
   role: UserRole;
 };
 
-// Get current user from localStorage
+/* =====================
+   LOCAL STORAGE HELPERS
+===================== */
+
 export const getCurrentUser = (): User | null => {
   try {
     const userStr = localStorage.getItem("user");
-    if (!userStr) return null;
-    return JSON.parse(userStr);
+    return userStr ? JSON.parse(userStr) : null;
   } catch {
     return null;
   }
 };
 
-// Get token from localStorage
-export const getToken = (): string | null => {
-  return localStorage.getItem("token");
-};
+export const getToken = (): string | null =>
+  localStorage.getItem("token");
 
-// Get current user role
-export const getUserRole = (): UserRole | null => {
-  const user = getCurrentUser();
-  return user?.role || null;
-};
+export const getUserRole = (): UserRole | null =>
+  getCurrentUser()?.role || null;
 
-// Check if user is admin
-export const isAdmin = (): boolean => {
-  return getUserRole() === "admin";
-};
+export const isAdmin = (): boolean =>
+  getUserRole() === "admin";
 
-// Check if user is authenticated
-export const isAuthenticated = (): boolean => {
-  return !!getToken();
-};
+export const isAuthenticated = (): boolean =>
+  Boolean(getToken());
 
-// Login function
+/* =====================
+        LOGIN
+===================== */
+
 export const login = async (
   email: string,
   password: string
 ): Promise<{ success: boolean; user?: User; error?: string }> => {
   try {
-    const response = await api.post("/auth/login", { email, password });
-    const { token, user } = response.data;
+    const res = await api.post("/auth/login", { email, password });
 
-    if (token && user) {
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
-      localStorage.setItem("isAuth", "true");
-      return { success: true, user };
+    const { token, user } = res.data;
+
+    if (!token || !user) {
+      return { success: false, error: "Invalid server response" };
     }
 
-    return { success: false, error: "Invalid response from server" };
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(user));
+    localStorage.setItem("isAuth", "true");
+
+    return { success: true, user };
   } catch (error: any) {
     return {
       success: false,
@@ -66,30 +64,36 @@ export const login = async (
   }
 };
 
-// Register function
+/* =====================
+       REGISTER
+===================== */
+
 export const register = async (
   name: string,
   email: string,
   password: string
 ): Promise<{ success: boolean; user?: User; error?: string }> => {
   try {
-    const response = await api.post("/auth/register", {
+    const res = await api.post("/auth/register", {
       name,
       email,
       password,
     });
-    const { token, user } = response.data;
 
-    if (token) {
-      // If user object is not in response, create one from the data
-      const userData = user || { email, name, role: "user" };
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(userData));
-      localStorage.setItem("isAuth", "true");
-      return { success: true, user: userData };
+    const { token, user } = res.data;
+
+    if (!token) {
+      return { success: false, error: "Invalid server response" };
     }
 
-    return { success: false, error: "Invalid response from server" };
+    const userData: User =
+      user || { name, email, role: "user" };
+
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem("isAuth", "true");
+
+    return { success: true, user: userData };
   } catch (error: any) {
     return {
       success: false,
@@ -98,20 +102,23 @@ export const register = async (
   }
 };
 
-// Logout function
+/* =====================
+        LOGOUT
+===================== */
+
 export const logout = (): void => {
-  localStorage.removeItem("token");
-  localStorage.removeItem("user");
-  localStorage.removeItem("isAuth");
-  localStorage.removeItem("cart");
+  localStorage.clear();
 };
 
-// Get user profile from API
+/* =====================
+     USER PROFILE
+===================== */
+
 export const getUserProfile = async (): Promise<User | null> => {
   try {
-    const response = await api.get("/users/profile");
-    return response.data.user;
-  } catch (error) {
+    const res = await api.get("/users/profile");
+    return res.data.user;
+  } catch {
     return null;
   }
 };
