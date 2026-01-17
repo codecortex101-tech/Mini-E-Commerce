@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
 
+/* ---------- Routes ---------- */
 const authRoutes = require("./routes/authRoutes");
 const testRoutes = require("./routes/testRoutes");
 const adminRoutes = require("./routes/adminRoutes");
@@ -12,6 +13,7 @@ const wishlistRoutes = require("./routes/wishlistRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
 const userRoutes = require("./routes/userRoutes");
 
+/* ---------- Error Middleware ---------- */
 const errorHandler = require("./middlewares/errorMiddleware");
 
 const app = express();
@@ -20,34 +22,42 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-/* ---------- CORS (FIXED & SAFE) ---------- */
+/* ---------- CORS (PRODUCTION + LOCAL FIXED) ---------- */
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://127.0.0.1:5173",
+  "http://127.0.0.1:5174",
+
+  // ✅ Vercel Frontend (ADD / CHANGE IF DOMAIN CHANGES)
+  "https://mini-e-commerce-aitx873d0-azhars-projects-61cd967e.vercel.app",
+];
+
 app.use(
   cors({
     origin: function (origin, callback) {
-      const allowedOrigins = [
-        "http://localhost:5173",
-        "http://localhost:5174",
-        "http://127.0.0.1:5173",
-        "http://127.0.0.1:5174",
-      ];
-
-      // Allow requests with no origin (Postman / Thunder Client)
+      // Allow Postman / server-to-server
       if (!origin) return callback(null, true);
 
       if (allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
-        callback(new Error("Not allowed by CORS"));
+        callback(new Error(`CORS blocked for origin: ${origin}`));
       }
     },
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+/* ---------- Handle Preflight ---------- */
+app.options("*", cors());
 
 /* ---------- Security ---------- */
 app.use(helmet());
 
-/* ---------- Routes ---------- */
+/* ---------- API Routes ---------- */
 app.use("/api/auth", authRoutes);
 app.use("/api/test", testRoutes);
 app.use("/api/admin", adminRoutes);
@@ -75,7 +85,7 @@ app.get("/health", (req, res) => {
   });
 });
 
-/* ---------- Error Handler (MUST be last) ---------- */
+/* ---------- Error Handler (MUST BE LAST) ---------- */
 app.use(errorHandler);
 
 module.exports = app;
