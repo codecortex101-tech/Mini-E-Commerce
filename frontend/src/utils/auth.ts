@@ -1,14 +1,15 @@
+// frontend/src/utils/auth.ts
+
 export const getCurrentUser = () => {
-  try {
-    const user = localStorage.getItem("user");
-    if (!user) return null;
-    return JSON.parse(user);
-  } catch {
-    return null;
-  }
+  const user = localStorage.getItem("user");
+  return user ? JSON.parse(user) : null;
 };
 
-export const isAdmin = () => {
+export const isAuthenticated = (): boolean => {
+  return !!localStorage.getItem("user");
+};
+
+export const isAdmin = (): boolean => {
   const user = getCurrentUser();
   return user?.role === "admin";
 };
