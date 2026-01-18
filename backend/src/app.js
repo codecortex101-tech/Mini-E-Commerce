@@ -14,16 +14,11 @@ app.use(express.urlencoded({ extended: true }));
 /* ================= SECURITY ================= */
 app.use(helmet());
 
-/* ================= CORS (NO CALLBACK, NO THROW) ================= */
+/* ================= CORS (FINAL FIX) ================= */
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "http://localhost:5174",
-      "https://*.vercel.app"
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"]
+    origin: true,          // allow ALL origins dynamically
+    credentials: true,     // allow cookies / auth
   })
 );
 
