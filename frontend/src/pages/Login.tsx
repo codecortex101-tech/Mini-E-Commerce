@@ -1,73 +1,138 @@
 import { useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
 
-const Login = () => {
-  const navigate = useNavigate();
-
+export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e) => {
-    e.preventDefault(); // ⭐ MUST
-
-    // ⭐ RESET OLD ERROR
+    e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
-      const res = await axios.post(
+      const res = await fetch(
         "https://mini-e-commerce-dxoh.onrender.com/api/auth/login",
-        { email, password },
-        { withCredentials: true }
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        }
       );
 
-      // ✅ SUCCESS
-      if (res.data.success) {
-        localStorage.setItem("user", JSON.stringify(res.data.user));
-        navigate("/dashboard"); // ya home
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.message || "Login failed");
+        setLoading(false);
+        return;
       }
+
+      // ✅ SUCCESS
+      console.log("LOGIN SUCCESS:", data);
+
+      // optional: save user
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      // redirect
+      window.location.href = "/";
+
     } catch (err) {
-      // ❌ ERROR HANDLE
-      setError(
-        err.response?.data?.message || "Login failed"
-      );
+      console.error(err);
+      setError("Server error. Try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleLogin}>
-      <input
-        type="email"
-        value={email}
-        onChange={(e) => {
-          setEmail(e.target.value);
-          setError(""); // ⭐ clear while typing
+    <div
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        background: "#f3fff7",
+      }}
+    >
+      <form
+        onSubmit={handleLogin}
+        style={{
+          width: "100%",
+          maxWidth: 400,
+          padding: 30,
+          background: "#fff",
+          borderRadius: 10,
+          boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
         }}
-        required
-      />
+      >
+        <h2 style={{ textAlign: "center", marginBottom: 20 }}>Login</h2>
 
-      <input
-        type="password"
-        value={password}
-        onChange={(e) => {
-          setPassword(e.target.value);
-          setError(""); // ⭐ clear while typing
-        }}
-        required
-      />
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          style={inputStyle}
+        />
 
-      {error && <div className="error-box">{error}</div>}
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          style={inputStyle}
+        />
 
-      <button type="submit" disabled={loading}>
-        {loading ? "Logging in..." : "Login"}
-      </button>
-    </form>
+        {error && (
+          <div
+            style={{
+              color: "red",
+              marginBottom: 10,
+              textAlign: "center",
+            }}
+          >
+            {error}
+          </div>
+        )}
+
+        <button
+          type="submit"
+          disabled={loading}
+          style={{
+            width: "100%",
+            padding: 12,
+            background: "#0a8f4e",
+            color: "#fff",
+            border: "none",
+            borderRadius: 6,
+            cursor: "pointer",
+            fontSize: 16,
+          }}
+        >
+          {loading ? "Logging in..." : "Login"}
+        </button>
+
+        <p style={{ marginTop: 15, textAlign: "center" }}>
+          Don’t have an account?{" "}
+          <a href="/register" style={{ color: "#0a8f4e" }}>
+            Register
+          </a>
+        </p>
+      </form>
+    </div>
   );
-};
+}
 
-export default Login;
+const inputStyle = {
+  width: "100%",
+  padding: 12,
+  marginBottom: 12,
+  borderRadius: 6,
+  border: "1px solid #ccc",
+};
