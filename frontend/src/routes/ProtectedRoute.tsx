@@ -1,17 +1,15 @@
 import { Navigate } from "react-router-dom";
-import React from "react";
-import { isAuthenticated } from "../utils/auth";
 
-type Props = {
-  children: React.ReactNode;
-};
+const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
+  const user = localStorage.getItem("user");
 
-const ProtectedRoute = ({ children }: Props) => {
-  if (!isAuthenticated()) {
+  // ❌ agar user nahi
+  if (!user) {
     return <Navigate to="/login" replace />;
   }
 
-  return <>{children}</>;
+  // ✅ agar user hai
+  return children;
 };
 
 export default ProtectedRoute;

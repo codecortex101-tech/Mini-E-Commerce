@@ -1,16 +1,15 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import api from "../services/api"; // axios instance
+import api from "../services/api";
 
 const Login = () => {
   const navigate = useNavigate();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async (e) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
@@ -21,24 +20,13 @@ const Login = () => {
         password,
       });
 
-      console.log("LOGIN RESPONSE:", res.data);
-
-      // ✅ IMPORTANT CHECK
-      if (res.data && res.data.success === true) {
-        // save user
+      if (res.data?.success) {
         localStorage.setItem("user", JSON.stringify(res.data.user));
-
-        // OPTIONAL: save token if backend sends
-        if (res.data.token) {
-          localStorage.setItem("token", res.data.token);
-        }
-
-        navigate("/dashboard");
+        navigate("/dashboard", { replace: true });
       } else {
         setError("Login failed. Check email or password.");
       }
-    } catch (err) {
-      console.error("LOGIN ERROR:", err);
+    } catch {
       setError("Login failed. Check email or password.");
     } finally {
       setLoading(false);
@@ -47,17 +35,10 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <form
-        onSubmit={handleLogin}
-        className="bg-white p-6 rounded-lg shadow-md w-96"
-      >
+      <form onSubmit={handleLogin} className="bg-white p-6 rounded-lg shadow-md w-96">
         <h2 className="text-2xl font-bold mb-4 text-center">Login</h2>
 
-        {error && (
-          <div className="bg-red-100 text-red-700 p-2 mb-3 rounded">
-            {error}
-          </div>
-        )}
+        {error && <div className="bg-red-100 text-red-700 p-2 mb-3 rounded">{error}</div>}
 
         <input
           type="email"
@@ -80,7 +61,7 @@ const Login = () => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
+          className="w-full bg-green-600 text-white py-2 rounded"
         >
           {loading ? "Logging in..." : "Login"}
         </button>
